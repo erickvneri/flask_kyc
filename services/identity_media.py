@@ -32,13 +32,17 @@ media_manager = MediaManager()
 
 class IdentityMediaService:
 
-    def save_media(self, *, file: object):
+    def save_media(self, *, file: object) -> dict:
         logging.info("processing new identity media record")
         content = file.read()
         length = len(content)
 
         # generate face extract
         extract, extract_length = media_manager.gen_media_face_extract(content)
+
+        if not extract or not extract_length:
+            logging.warn("failed to process media content extract")
+            return None
 
         result = create_identity_media(
             file.filename,

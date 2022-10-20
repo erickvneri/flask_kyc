@@ -34,7 +34,7 @@ _cascade = cv2.CascadeClassifier(
 class MediaManager:
     tmp_path = "services/tmp/"
 
-    def gen_media_face_extract(self, media_bytes: bytes) -> tuple or None:
+    def gen_media_face_extract(self, media_bytes: bytes) -> tuple:
         media_path = self.gen_media_path()
 
         with open(media_path, "wb") as tmp:
@@ -49,7 +49,7 @@ class MediaManager:
             minSize=(30, 30))
         logging.info(f"faces found in extract {len(_extract)}")
 
-        if len(_extract) > 1: return None
+        if len(_extract) > 1: return None, None
         extract_path = self.process_media_extract(_media, _extract)
 
         with open(extract_path, "rb") as media_extract:
