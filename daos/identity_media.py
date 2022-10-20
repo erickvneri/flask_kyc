@@ -113,6 +113,5 @@ def delete_identity_media(uuid: str) -> tuple:
     RETURNING TRUE;
     """
     params = dict(uuid=uuid)
-    print(params)
     connection.pool.execute(sql_query, params)
     return connection.pool.fetchall()
