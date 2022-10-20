@@ -24,7 +24,8 @@ from config import logging
 from services.media_manager import MediaManager
 from daos.identity_media import (
     create_identity_media,
-    get_identity_media)
+    get_identity_media,
+    delete_identity_media)
 
 
 media_manager = MediaManager()
@@ -32,7 +33,7 @@ media_manager = MediaManager()
 
 class IdentityMediaService:
 
-    def save_media(self, *, file: object) -> dict:
+    def create_media(self, *, file: object) -> dict:
         logging.info("processing new identity media record")
         content = file.read()
         length = len(content)
@@ -66,7 +67,7 @@ class IdentityMediaService:
             length=length,
             extract_length=extract_length)
 
-    def get_media(self, *, uuid: str):
+    def get_media(self, *, uuid: str) -> dict:
         logging.info(f"loading identity media {uuid}")
 
         result = get_identity_media(uuid)
@@ -89,3 +90,12 @@ class IdentityMediaService:
             content_extract=content_extract,
             extract_length=extract_length,
             updated_at=updated_at)
+
+    def delete_media(self, *, uuid: str) -> bool:
+        logging.info(f"deleting identity media {uuid}")
+        result = delete_identity_media(uuid)
+        success = bool(result)
+
+        if not success:
+            logging.warn(f"failed to delete identity media {uuid}")
+        return success

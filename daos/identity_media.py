@@ -99,4 +99,20 @@ def get_identity_media(uuid: str) -> tuple:
     return connection.pool.fetchone()
 
 
-# def update_identity_media():
+def delete_identity_media(uuid: str) -> tuple:
+    """
+    Attempts to phisically delete
+    a row from the public.identity_media
+    table according to its UUID.
+
+    ::param uuid str
+    """
+    sql_query = """
+    DELETE FROM identity_media
+    WHERE uuid = %(uuid)s
+    RETURNING TRUE;
+    """
+    params = dict(uuid=uuid)
+    print(params)
+    connection.pool.execute(sql_query, params)
+    return connection.pool.fetchall()

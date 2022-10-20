@@ -26,7 +26,7 @@ from services.identity_media import IdentityMediaService
 
 
 resource = Blueprint("identity_media", __name__)
-identity_media_service = IdentityMediaService()
+idm_service = IdentityMediaService()
 
 
 @resource.route("", methods=["POST"])
@@ -37,7 +37,7 @@ def post_create_identity_media():
     media_content = request.files.get("content")
 
     try:
-        result = identity_media_service.save_media(file=media_content)
+        result = idm_service.create_media(file=media_content)
 
         if not result:
             raise Exception()
@@ -55,7 +55,7 @@ def get_identity_media(uuid: str):
     error = None
 
     try:
-        result = identity_media_service.get_media(uuid=uuid)
+        result = idm_service.get_media(uuid=uuid)
         if not result: raise Exception()
 
         res = make_response(result["content_extract"].tobytes())
@@ -65,6 +65,24 @@ def get_identity_media(uuid: str):
             "attachment",
             filename=result["name"])
     except:
+        logging.warn(exc_info=True)
+        error = abort(jsonify(status="ERROR", error=["failed to save media"]), status_code=500)
+    finally:
+        if error: return error
+        return res
+
+@resource.route("<string:uuid>", methods=["DELETE"])
+def delete_identity_media(uuid: str):
+    res = None
+    error = None
+
+    try:
+        result = idm_service.delete_media(uuid=uuid)
+        if not result: raise Exception("failed to delete media")
+        res = make_response("No Content")
+        res.status_code = 204
+    except:
+        logging.warn(exc_info=True)
         error = abort(jsonify(status="ERROR", error=["failed to save media"]), status_code=500)
     finally:
         if error: return error
