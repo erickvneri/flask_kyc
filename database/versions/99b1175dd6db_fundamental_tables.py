@@ -25,9 +25,9 @@ def upgrade() -> None:
         name VARCHAR(255),
         type VARCHAR(255),
         content BYTEA,
-        length INTEGER,
+        length BIGINT DEFAULT 0,
         content_extract BYTEA,
-        extract_length INTEGER,
+        extract_length BIGINT DEFAULT 0,
         created_at TIMESTAMP,
         updated_at TIMESTAMP
     );
