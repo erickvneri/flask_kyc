@@ -23,6 +23,7 @@ from flask import Blueprint, request, jsonify, abort, make_response
 # locals
 from config import logging
 from services.identity_media import IdentityMediaService
+from util.response import SuccessRes, ErrorRes
 
 
 resource = Blueprint("identity_media", __name__)
@@ -31,22 +32,21 @@ idm_service = IdentityMediaService()
 
 @resource.route("", methods=["POST"])
 def post_create_identity_media():
+    media_content = request.files.get("content")
     res = None
     error = None
-    result = None
-    media_content = request.files.get("content")
 
     try:
         result = idm_service.create_media(file=media_content)
 
         if not result:
             raise Exception()
+        res = SuccessRes(status_code=201, data=result)
     except:
-        logging.warn(exc_info=True)
-        error = abort(jsonify(status="ERROR", error=["failed to save media"]), status_code=500)
+        logging.warn("failed to create identity media", exc_info=True)
+        error = ErrorRes(status_code=500)
     finally:
-        if error: return error
-        return jsonify(status="SUCCESS", data=result)
+        return error and error.json or res.json
 
 
 @resource.route("<string:uuid>", methods=["GET"])
@@ -66,10 +66,9 @@ def get_identity_media(uuid: str):
             filename=result["name"])
     except:
         logging.warn(exc_info=True)
-        error = abort(jsonify(status="ERROR", error=["failed to save media"]), status_code=500)
+        error = ErrorRes(status_code=500)
     finally:
-        if error: return error
-        return res
+        return error and error.json or res
 
 @resource.route("<string:uuid>", methods=["DELETE"])
 def delete_identity_media(uuid: str):

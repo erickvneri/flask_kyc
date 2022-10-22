@@ -99,3 +99,24 @@ class IdentityMediaService:
         if not success:
             logging.warn(f"failed to delete identity media {uuid}")
         return success
+
+    def get_identity_match(self, *, media_uuid: str, file: object):
+        logging.info(f"performing identity match between file {file.filename} and resource {media_uuid}")
+        target_media = file.read()
+        base_media = get_identity_media(media_uuid)
+
+        if not base_media:
+            logging.warn(f"content {media_uuid} not found")
+            return None
+
+        name, base_bytes, *_else = base_media
+        logging.info(f"base_bytes {media_uuid} found with name {name}")
+
+        result = media_manager.media_recon_percentage(base_bytes, target_media)
+
+        if result is None:
+            logging.warn(f"identity match coudln't be generated")
+            return None
+
+        logging.warn(f"identity match between media is: {result}%")
+        return dict(percentage=result)

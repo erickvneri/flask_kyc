@@ -22,7 +22,7 @@
 from flask import Flask
 # locals
 from config import env
-from resources import identity_media
+from resources import identity_media, identify
 
 # Initialize db
 # connection pool
@@ -37,6 +37,7 @@ app = Flask("flask_recon_racoon")
 
 # Configure API Resources
 app.register_blueprint(identity_media, url_prefix="/identity_media")
+app.register_blueprint(identify, url_prefix="/identify")
 
 
 if __name__ == '__main__':

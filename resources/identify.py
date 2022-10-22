@@ -23,19 +23,30 @@ from flask import Blueprint, request, jsonify, abort, make_response
 # locals
 from config import logging
 from services.identity_media import IdentityMediaService
+from util.response import SuccessRes, ErrorRes
 
 
 resource = Blueprint("identity", __name__)
+idm_service = IdentityMediaService()
 
 
-@resource.route("", methods=["POST"])
-def post_verify_identity():
+@resource.route("<string:uuid>", methods=["POST"])
+def post_verify_identity(uuid: str):
+    media_content = request.files.get("content")
     res = None
-    err = None
+    error = None
 
     try:
-        pass
+        result = idm_service.get_identity_match(
+            media_uuid=uuid,
+            file=media_content)
+        print(result)
+
+        if not result:
+            raise Exception("Coudln't proceed with identity match checks")
+        res = SuccessRes(status_code=200, data=result)
     except:
-        pass
+        logging.warn("unexpected error", exc_info=True)
+        error = ErrorRes(status_code=500)
     finally:
-        pass
+        return error and error.json or res.json

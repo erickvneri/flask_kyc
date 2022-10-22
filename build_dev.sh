@@ -37,3 +37,5 @@ SQL
 # Execute alembic migrations
 export env='dev'
 alembic upgrade head
+
+python app.py

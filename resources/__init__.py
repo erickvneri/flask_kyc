@@ -20,3 +20,4 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 from .identity_media import resource as identity_media
+from .identify import resource as identify
