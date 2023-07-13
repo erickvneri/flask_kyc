@@ -23,13 +23,14 @@ import cv2
 import os
 import face_recognition as fr
 from datetime import datetime
+
 # locals
 from config import logging
 
 
 _cascade = cv2.CascadeClassifier(
-    cv2.data.haarcascades + \
-    "haarcascade_frontalface_default.xml")
+    cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+)
 
 
 class MediaManager:
@@ -41,6 +42,8 @@ class MediaManager:
         It will fail in case of finding less or
         greater than 1 faces in the byte array.
 
+        Param ref: https://stackoverflow.com/questions/20801015/recommended-values-for-opencv-detectmultiscale-parameters
+
         ::param media_bytes bytes
         """
         media_path = self.gen_media_path()
@@ -50,14 +53,12 @@ class MediaManager:
         _media = cv2.imread(media_path)
         _gray_scaled = cv2.cvtColor(_media, cv2.COLOR_BGR2GRAY)
         _extract = _cascade.detectMultiScale(
-            _gray_scaled,
-            scaleFactor=1.2,
-            minNeighbors=3,
-            minSize=(30, 30))
+            _gray_scaled, scaleFactor=1.05, minNeighbors=6, minSize=(40, 40)
+        )
 
-        if len(_extract) != 1:
-            logging.warn("failed to collect face extract from media bytes")
-            return None, None
+        # if len(_extract) != 1:
+        # logging.warn("failed to collect face extract from media bytes")
+        # return None, None
 
         extract_path = self.process_media_extract(_media, _extract)
 
@@ -79,15 +80,17 @@ class MediaManager:
         ::param extract list
         """
         extract_media_path = None
-        for (x,y,w,h) in extract:
-            cv2.rectangle(media, (x,y), (x+w, y+h), (0,0,0), 0)
-            roi_color = media[y:y + h, x:x + w]
+        for x, y, w, h in extract:
+            cv2.rectangle(media, (x, y), (x + w, y + h), (0, 0, 0), 0)
+            roi_color = media[y : y + h, x : x + w]
             extract_media_path = self.gen_media_path()
             cv2.imwrite(extract_media_path, roi_color)
             logging.info(f"temp extract media written at {extract_media_path}")
         return extract_media_path
 
-    def media_recon_percentage(self, media_bytes: bytes, target_media_bytes: bytes) -> float:
+    def media_recon_percentage(
+        self, media_bytes: bytes, target_media_bytes: bytes
+    ) -> float:
         """
         It takes two byte parameters to build
         two temp images for further analysis.
@@ -114,7 +117,9 @@ class MediaManager:
         target_encoding = self.gen_image_encodings(_target_media_path)
 
         # Track match percentage
-        match_percentage = self.get_media_match_percentage(media_encoding, target_encoding)
+        match_percentage = self.get_media_match_percentage(
+            media_encoding, target_encoding
+        )
 
         # Teardown tmp files
         assert self.teardown_tmp_file(_media_path)
@@ -170,7 +175,9 @@ class MediaManager:
         return encodings
 
     @staticmethod
-    def get_media_match_percentage(base_encoding: list, target_encoding: list, decimals: int = 2):
+    def get_media_match_percentage(
+        base_encoding: list, target_encoding: list, decimals: int = 2
+    ):
         """
         Implements face_recognition library
         and process the encodings provided

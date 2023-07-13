@@ -20,19 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 from config import logging
+
 # locals
 from services.media_manager import MediaManager
 from daos.identity_media import (
     create_identity_media,
     get_identity_media,
-    delete_identity_media)
+    delete_identity_media,
+)
 
 
 media_manager = MediaManager()
 
 
 class IdentityMediaService:
-
     def create_media(self, *, file: object) -> dict:
         logging.info("processing new identity media record")
         content = file.read()
@@ -46,12 +47,8 @@ class IdentityMediaService:
             return None
 
         result = create_identity_media(
-            file.filename,
-            content,
-            length,
-            file.content_type,
-            extract,
-            extract_length)
+            file.filename, content, length, file.content_type, extract, extract_length
+        )
 
         if not result:
             loggging.warn("failed to process and save identity media")
@@ -65,7 +62,8 @@ class IdentityMediaService:
             created_at=str(created_at),
             filename=name,
             length=length,
-            extract_length=extract_length)
+            extract_length=extract_length,
+        )
 
     def get_media(self, *, uuid: str) -> dict:
         logging.info(f"loading identity media {uuid}")
@@ -74,13 +72,15 @@ class IdentityMediaService:
 
         if not result:
             logging.warn(f"failed to load identity media {uuid}")
-        name, \
-        content, \
-        length, \
-        created_at, \
-        content_extract, \
-        extract_length, \
-        updated_at = result
+        (
+            name,
+            content,
+            length,
+            created_at,
+            content_extract,
+            extract_length,
+            updated_at,
+        ) = result
 
         return dict(
             name=name,
@@ -89,7 +89,8 @@ class IdentityMediaService:
             created_at=created_at,
             content_extract=content_extract,
             extract_length=extract_length,
-            updated_at=updated_at)
+            updated_at=updated_at,
+        )
 
     def delete_media(self, *, uuid: str) -> bool:
         logging.info(f"deleting identity media {uuid}")
@@ -101,7 +102,9 @@ class IdentityMediaService:
         return success
 
     def get_identity_match(self, *, media_uuid: str, file: object):
-        logging.info(f"performing identity match between file {file.filename} and resource {media_uuid}")
+        logging.info(
+            f"performing identity match between file {file.filename} and resource {media_uuid}"
+        )
         target_media = file.read()
         base_media = get_identity_media(media_uuid)
 

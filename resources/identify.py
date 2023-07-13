@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 from flask import Blueprint, request, jsonify, abort, make_response
+
 # locals
 from config import logging
 from services.identity_media import IdentityMediaService
@@ -37,10 +38,7 @@ def post_verify_identity(uuid: str):
     error = None
 
     try:
-        result = idm_service.get_identity_match(
-            media_uuid=uuid,
-            file=media_content)
-        print(result)
+        result = idm_service.get_identity_match(media_uuid=uuid, file=media_content)
 
         if not result:
             raise Exception("Coudln't proceed with identity match checks")

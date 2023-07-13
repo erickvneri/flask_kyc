@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 from flask import Flask
+
 # locals
 from config import env
 from resources import identity_media, identify
@@ -33,15 +34,12 @@ import services.media_manager
 
 
 # Initialize application
-app = Flask("flask_recon_racoon")
+app = Flask("flask_kyc")
 
 # Configure API Resources
 app.register_blueprint(identity_media, url_prefix="/identity_media")
 app.register_blueprint(identify, url_prefix="/identify")
 
 
-if __name__ == '__main__':
-    app.run(
-        host=env.HOST,
-        port=env.PORT,
-        debug=True)
+if __name__ == "__main__":
+    app.run(host=env.HOST, port=env.PORT, debug=True)
