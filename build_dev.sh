@@ -11,9 +11,9 @@ do_connect () {
 # to proceed consistently
 do_connect \
 <<SQL
-SELECT pg_terminate_backen(pid)
+SELECT pg_terminate_backend(pid)
 FROM pg_stat_activity
-WHERE datname='recon_racoon';
+WHERE datname='flask_kyc';
 COMMIT;
 SQL
 
@@ -21,7 +21,7 @@ SQL
 # Drop database
 do_connect \
 <<SQL
-DROP DATABASE IF EXISTS recon_racoon;
+DROP DATABASE IF EXISTS flask_kyc;
 COMMIT;
 SQL
 
@@ -29,7 +29,7 @@ SQL
 #
 do_connect \
 <<SQL
-CREATE DATABASE recon_racoon;
+CREATE DATABASE flask_kyc;
 COMMIT;
 SQL
 
